@@ -442,6 +442,8 @@ public class DatabaseDataStore extends DataStore
 		boolean inheritNothing = claim.getSubclaimRestrictions();
 		long parentId = claim.parent == null ? -1 : claim.parent.id;
 
+		GriefPrevention.AddLogEntry("Saving claim " + claim.id);
+
 		try (PreparedStatement insertStmt = this.databaseConnection.prepareStatement(this.getInsertClaimSQL())) {
 
 			insertStmt.setLong(1, claim.id);
@@ -496,12 +498,15 @@ public class DatabaseDataStore extends DataStore
 				playerData.setAccruedClaimBlocks(results.getInt("accruedblocks"));
 				playerData.setBonusClaimBlocks(results.getInt("bonusblocks"));
 			}
+			GriefPrevention.AddLogEntry("Retrieved data for " + playerID + ": accrued: " +
+					String.valueOf(playerData.getAccruedClaimBlocks()) + " bonus: " + String.valueOf(playerData.getBonusClaimBlocks()));
 		}
 		catch(SQLException e)
 		{
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
 			GriefPrevention.AddLogEntry(playerID + " " + errors.toString(), CustomLogEntryTypes.Exception);
+			GriefPrevention.AddLogEntry("Unable to retrieve data for player " + playerID, CustomLogEntryTypes.Debug);
 		}
 
 		return playerData;
@@ -519,6 +524,8 @@ public class DatabaseDataStore extends DataStore
 
 	private void savePlayerData(String playerID, PlayerData playerData)
 	{
+		GriefPrevention.AddLogEntry("Preparing to save data for " + playerID + ": accrued: " +
+				String.valueOf(playerData.getAccruedClaimBlocks()) + " bonus: " + String.valueOf(playerData.getBonusClaimBlocks()));
 		try (PreparedStatement deleteStmnt = this.databaseConnection.prepareStatement(this.getDeletePlayerDataSQL());
 			 PreparedStatement insertStmnt = this.databaseConnection.prepareStatement(this.getInsertPlayerDataSQL())) {
 			OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(playerID));
@@ -539,6 +546,7 @@ public class DatabaseDataStore extends DataStore
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
 			GriefPrevention.AddLogEntry(playerID + " " + errors.toString(), CustomLogEntryTypes.Exception);
+			GriefPrevention.AddLogEntry("Unable to save data for player " + playerID, CustomLogEntryTypes.Debug);
 		}
 	}
 
@@ -552,6 +560,7 @@ public class DatabaseDataStore extends DataStore
 	synchronized void setNextClaimID(long nextID)
 	{
 		this.nextClaimID = nextID;
+		GriefPrevention.AddLogEntry("incrementing claim ID to " + nextID);
 
 		try (PreparedStatement deleteStmnt = this.databaseConnection.prepareStatement(this.getDeleteNextClaimIdSQL());
 			 PreparedStatement insertStmnt = this.databaseConnection.prepareStatement(this.getInsertNextClaimIdSQL())) {
