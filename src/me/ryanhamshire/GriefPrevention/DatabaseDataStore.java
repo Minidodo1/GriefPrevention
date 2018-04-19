@@ -499,7 +499,7 @@ public class DatabaseDataStore extends DataStore
 				playerData.setBonusClaimBlocks(results.getInt("bonusblocks"));
 			}
 			GriefPrevention.AddLogEntry("Retrieved data for " + playerID + ": accrued: " +
-					String.valueOf(playerData.getAccruedClaimBlocks()) + " bonus: " + String.valueOf(playerData.getBonusClaimBlocks()));
+					String.valueOf(results.getInt("accruedblocks")) + " bonus: " + String.valueOf(results.getInt("bonusblocks")));
 		}
 		catch(SQLException e)
 		{
