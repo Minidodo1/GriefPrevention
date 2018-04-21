@@ -497,9 +497,14 @@ public class DatabaseDataStore extends DataStore
 			{
 				playerData.setAccruedClaimBlocks(results.getInt("accruedblocks"));
 				playerData.setBonusClaimBlocks(results.getInt("bonusblocks"));
+				GriefPrevention.AddLogEntry("Retrieved data for " + playerID + ": accrued: " +
+						String.valueOf(results.getInt("accruedblocks")) + " bonus: " + String.valueOf(results.getInt("bonusblocks")));
 			}
-			GriefPrevention.AddLogEntry("Retrieved data for " + playerID + ": accrued: " +
-					String.valueOf(results.getInt("accruedblocks")) + " bonus: " + String.valueOf(results.getInt("bonusblocks")));
+			else
+			{
+				GriefPrevention.AddLogEntry("Succesfully executed SQL query for " + playerID + " but the results were empty. Returning a fresh, new PlayerData object for this player");
+			}
+
 		}
 		catch(SQLException e)
 		{
